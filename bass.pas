@@ -1,6 +1,6 @@
 {
   BASS 2.4 Delphi unit
-  Copyright (c) 1999-2016 Un4seen Developments Ltd.
+  Copyright (c) 1999-2019 Un4seen Developments Ltd.
 
   See the BASS.CHM file for more detailed documentation
 
@@ -54,7 +54,7 @@ const
   BASS_ERROR_NONET        = 32;   // no internet connection could be opened
   BASS_ERROR_CREATE       = 33;   // couldn't create the file
   BASS_ERROR_NOFX         = 34;   // effects are not available
-  BASS_ERROR_NOTAVAIL     = 37;   // requested data is not available
+  BASS_ERROR_NOTAVAIL     = 37;   // requested data/action is not available
   BASS_ERROR_DECODE       = 38;   // the channel is/isn't a "decoding channel"
   BASS_ERROR_DX           = 39;   // a sufficient DirectX version is not installed
   BASS_ERROR_TIMEOUT      = 40;   // connection timedout
@@ -87,6 +87,7 @@ const
   BASS_CONFIG_VERIFY        = 23;
   BASS_CONFIG_UPDATETHREADS = 24;
   BASS_CONFIG_DEV_BUFFER    = 27;
+  BASS_CONFIG_REC_LOOPBACK  = 28;
   BASS_CONFIG_VISTA_TRUEPOS = 30;
   BASS_CONFIG_IOS_MIXAUDIO  = 34;
   BASS_CONFIG_DEV_DEFAULT   = 36;
@@ -107,10 +108,17 @@ const
   BASS_CONFIG_VERIFY_NET    = 52;
   BASS_CONFIG_DEV_PERIOD    = 53;
   BASS_CONFIG_FLOAT         = 54;
+  BASS_CONFIG_NET_SEEK      = 56;
+  BASS_CONFIG_AM_DISABLE    = 58;
+  BASS_CONFIG_NET_PLAYLIST_DEPTH = 59;
+  BASS_CONFIG_NET_PREBUF_WAIT = 60;
+  BASS_CONFIG_WASAPI_PERSIST = 65;
+  BASS_CONFIG_REC_WASAPI    = 66;
 
   // BASS_SetConfigPtr options
   BASS_CONFIG_NET_AGENT     = 16;
   BASS_CONFIG_NET_PROXY     = 17;
+  BASS_CONFIG_LIBSSL        = 64;
 
   // BASS_Init flags
   BASS_DEVICE_8BITS       = 1;    // 8 bit
@@ -124,6 +132,8 @@ const
   BASS_DEVICE_DMIX        = $2000; // use ALSA "dmix" plugin
   BASS_DEVICE_FREQ        = $4000; // set device sample rate
   BASS_DEVICE_STEREO      = $8000; // limit output to stereo
+  BASS_DEVICE_AUDIOTRACK  = $20000; // use AudioTrack output
+  BASS_DEVICE_DSOUND      = $40000; // use DirectSound output
 
   // DirectSound interfaces (for use with BASS_GetDSoundObject)
   BASS_OBJECT_DS          = 1;   // IDirectSound
@@ -191,12 +201,14 @@ const
   BASS_SAMPLE_OVER_DIST   = $30000; // override furthest from listener (3D only)
 
   BASS_STREAM_PRESCAN     = $20000; // enable pin-point seeking/length (MP3/MP2/MP1)
-  BASS_MP3_SETPOS         = BASS_STREAM_PRESCAN;
   BASS_STREAM_AUTOFREE	  = $40000; // automatically free the stream when it stop/ends
   BASS_STREAM_RESTRATE	  = $80000; // restrict the download rate of internet file streams
   BASS_STREAM_BLOCK       = $100000;// download/play internet file stream in small blocks
   BASS_STREAM_DECODE      = $200000;// don't play the stream, only decode (BASS_ChannelGetData)
   BASS_STREAM_STATUS      = $800000;// give server status info (HTTP/ICY tags) in DOWNLOADPROC
+
+  BASS_MP3_IGNOREDELAY    = $200; // ignore LAME/Xing/VBRI/iTunes delay & padding info
+  BASS_MP3_SETPOS         = BASS_STREAM_PRESCAN;
 
   BASS_MUSIC_FLOAT        = BASS_SAMPLE_FLOAT;
   BASS_MUSIC_MONO         = BASS_SAMPLE_MONO;
@@ -249,6 +261,8 @@ const
   BASS_VAM_TERM_DIST      = 8;
   BASS_VAM_TERM_PRIO      = 16;
 
+  BASS_ORIGRES_FLOAT      = $10000;
+
   // BASS_CHANNELINFO types
   BASS_CTYPE_SAMPLE       = 1;
   BASS_CTYPE_RECORD       = 2;
@@ -258,6 +272,11 @@ const
   BASS_CTYPE_STREAM_MP2   = $10004;
   BASS_CTYPE_STREAM_MP3   = $10005;
   BASS_CTYPE_STREAM_AIFF  = $10006;
+  BASS_CTYPE_STREAM_CA    = $10007;
+  BASS_CTYPE_STREAM_MF    = $10008;
+  BASS_CTYPE_STREAM_AM    = $10009;
+  BASS_CTYPE_STREAM_DUMMY = $18000;
+  BASS_CTYPE_STREAM_DEVICE = $18001;
   BASS_CTYPE_STREAM_WAV   = $40000; // WAVE flag, LOWORD=codec
   BASS_CTYPE_STREAM_WAV_PCM = $50001;
   BASS_CTYPE_STREAM_WAV_FLOAT = $50003;
@@ -330,6 +349,7 @@ const
   BASS_FILEPOS_SOCKET     = 6;
   BASS_FILEPOS_ASYNCBUF   = 7;
   BASS_FILEPOS_SIZE       = 8;
+  BASS_FILEPOS_BUFFERING  = 9;
 
   // BASS_ChannelSetSync types
   BASS_SYNC_POS           = 0;
@@ -344,6 +364,8 @@ const
   BASS_SYNC_MUSICINST     = 1;
   BASS_SYNC_MUSICFX       = 3;
   BASS_SYNC_OGG_CHANGE    = 12;
+  BASS_SYNC_DEV_FAIL      = 14;
+  BASS_SYNC_DEV_FORMAT    = 15;
   BASS_SYNC_MIXTIME       = $40000000; // flag: sync at mixtime, else at playtime
   BASS_SYNC_ONETIME       = $80000000; // flag: sync only once, else continuously
 
@@ -352,6 +374,7 @@ const
   BASS_ACTIVE_PLAYING = 1;
   BASS_ACTIVE_STALLED = 2;
   BASS_ACTIVE_PAUSED  = 3;
+  BASS_ACTIVE_PAUSED_DEVICE = 4;
 
   // Channel attributes
   BASS_ATTRIB_FREQ                  = 1;
@@ -366,6 +389,7 @@ const
   BASS_ATTRIB_SCANINFO              = 10;
   BASS_ATTRIB_NORAMP                = 11;
   BASS_ATTRIB_BITRATE               = 12;
+  BASS_ATTRIB_BUFFER                = 13;
   BASS_ATTRIB_MUSIC_AMPLIFY         = $100;
   BASS_ATTRIB_MUSIC_PANSEP          = $101;
   BASS_ATTRIB_MUSIC_PSCALER         = $102;
@@ -375,6 +399,9 @@ const
   BASS_ATTRIB_MUSIC_ACTIVE          = $106;
   BASS_ATTRIB_MUSIC_VOL_CHAN        = $200; // + channel #
   BASS_ATTRIB_MUSIC_VOL_INST        = $300; // + instrument #
+
+  // BASS_ChannelSlideAttribute flags
+  BASS_SLIDE_LOG                    = $1000000;
 
   // BASS_ChannelGetData flags
   BASS_DATA_AVAILABLE = 0;        // query how much data is buffered
@@ -392,11 +419,13 @@ const
   BASS_DATA_FFT_NOWINDOW = $20;   // FFT flag: no Hanning window
   BASS_DATA_FFT_REMOVEDC = $40;   // FFT flag: pre-remove DC bias
   BASS_DATA_FFT_COMPLEX = $80;    // FFT flag: return complex data
+  BASS_DATA_FFT_NYQUIST = $100;   // FFT flag: return extra Nyquist value
 
   // BASS_ChannelGetLevelEx flags
   BASS_LEVEL_MONO     = 1;
   BASS_LEVEL_STEREO   = 2;
   BASS_LEVEL_RMS      = 4;
+  BASS_LEVEL_VOLPAN   = 8;
 
   // BASS_ChannelGetTags types : what's returned
   BASS_TAG_ID3        = 0; // ID3v1 tags : TAG_ID3 structure
@@ -413,10 +442,14 @@ const
   BASS_TAG_CA_CODEC   = 11;	// CoreAudio codec info : TAG_CA_CODEC structure
   BASS_TAG_MF         = 13;	// Media Foundation tags : series of null-terminated UTF-8 strings
   BASS_TAG_WAVEFORMAT = 14;	// WAVE format : WAVEFORMATEEX structure
+  BASS_TAG_AM_MIME    = 15; // Android Media MIME type : ASCII string
+  BASS_TAG_AM_NAME    = 16; // Android Media codec name : ASCII string
   BASS_TAG_RIFF_INFO  = $100; // RIFF "INFO" tags : series of null-terminated ANSI strings
   BASS_TAG_RIFF_BEXT  = $101; // RIFF/BWF "bext" tags : TAG_BEXT structure
   BASS_TAG_RIFF_CART  = $102; // RIFF/BWF "cart" tags : TAG_CART structure
   BASS_TAG_RIFF_DISP  = $103; // RIFF "DISP" text tag : ANSI string
+  BASS_TAG_RIFF_CUE   = $104; // RIFF "cue " chunk : TAG_CUE structure
+  BASS_TAG_RIFF_SMPL  = $105; // RIFF "smpl" chunk : TAG_SMPL structure
   BASS_TAG_APE_BINARY = $1000; // + index #, binary APEv2 tag : TAG_APE_BINARY structure
   BASS_TAG_MUSIC_NAME = $10000;	// MOD music name : ANSI string
   BASS_TAG_MUSIC_MESSAGE = $10001; // MOD message : ANSI string
@@ -429,10 +462,15 @@ const
   BASS_POS_BYTE           = 0; // byte position
   BASS_POS_MUSIC_ORDER    = 1; // order.row position, MAKELONG(order,row)
   BASS_POS_OGG            = 3; // OGG bitstream number
+  BASS_POS_RESET          = $2000000; // flag: reset user file buffers
+  BASS_POS_RELATIVE       = $4000000; // flag: seek relative to the current position
   BASS_POS_INEXACT        = $8000000; // flag: allow seeking to inexact position
   BASS_POS_DECODE         = $10000000; // flag: get the decoding (not playing) position
   BASS_POS_DECODETO       = $20000000; // flag: decode to the position instead of seeking
   BASS_POS_SCAN           = $40000000; // flag: scan to the position
+
+  // BASS_ChannelSetDevice/GetDevice option
+  BASS_NODEVICE           = $20000;
 
   // BASS_RecordSetInput flags
   BASS_INPUT_OFF    = $10000;
@@ -451,6 +489,7 @@ const
   BASS_INPUT_TYPE_AUX     = $09000000;
   BASS_INPUT_TYPE_ANALOG  = $0A000000;
 
+  // BASS_ChannelSetFX effect types
   BASS_FX_DX8_CHORUS	  = 0;
   BASS_FX_DX8_COMPRESSOR  = 1;
   BASS_FX_DX8_DISTORTION  = 2;
@@ -460,6 +499,7 @@ const
   BASS_FX_DX8_I3DL2REVERB = 6;
   BASS_FX_DX8_PARAMEQ     = 7;
   BASS_FX_DX8_REVERB      = 8;
+  BASS_FX_VOLUME          = 9;
 
   BASS_DX8_PHASE_NEG_180 = 0;
   BASS_DX8_PHASE_NEG_90  = 1;
@@ -621,7 +661,7 @@ type
     Version: Word;                              // BWF version (little-endian)
     UMID: Array[0..63] of Byte;                 // SMPTE UMID
     Reserved: Array[0..189] of Byte;
-    CodingHistory: Array[0..maxInt div 2 - 1] of AnsiChar;           // history
+    CodingHistory: AnsiChar;                    // history
   end;
 
   BASS_DX8_CHORUS = record
@@ -702,6 +742,13 @@ type
     fHighFreqRTRatio: Single;      // [0.001,0.999]          default: 0.001
   end;
 
+  BASS_FX_VOLUME_PARAM = record
+    fTarget: Single;
+    fCurrent: Single;
+    fTime: Single;
+    lCurve: DWORD;
+  end;
+
   // callback function types
   STREAMPROC = function(handle: HSTREAM; buffer: Pointer; length: DWORD; user: Pointer): DWORD; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
   {
@@ -720,9 +767,10 @@ const
   // special STREAMPROCs
   STREAMPROC_DUMMY = Pointer(0);   // "dummy" stream
   STREAMPROC_PUSH = Pointer(-1);   // push stream
+  STREAMPROC_DEVICE = Pointer(-2); // device mix stream
+  STREAMPROC_DEVICE_3D = Pointer(-3); // device 3D mix stream
 
 type
-
   DOWNLOADPROC = procedure(buffer: Pointer; length: DWORD; user: Pointer); {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
   {
     Internet stream download callback function.
@@ -802,6 +850,7 @@ function BASS_GetCPU: Single; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; ext
 function BASS_Start: BOOL; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
 function BASS_Stop: BOOL; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
 function BASS_Pause: BOOL; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
+function BASS_IsStarted: BOOL; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
 function BASS_SetVolume(volume: Single): BOOL; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
 function BASS_GetVolume: Single; {$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF}; external bassdll;
 
