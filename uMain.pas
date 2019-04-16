@@ -7,7 +7,7 @@ uses
   Dialogs, bass, StdCtrls, Buttons, ExtCtrls, ShellApi;
 
 type
-  TForm1 = class(TForm)
+  TfrmMain = class(TForm)
     OpenDialog1: TOpenDialog;
     Timer1: TTimer;
     Panel2: TPanel;
@@ -61,14 +61,14 @@ type
   end;
 
 var
-  Form1: TForm1;
+  frmMain: TfrmMain;
   stream: hstream;
   track: boolean;
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TfrmMain.FormCreate(Sender: TObject);
 begin
 DragAcceptFiles(Handle,true);
  if BASS_init(-1,44100,0,handle,nil) then
@@ -76,7 +76,7 @@ DragAcceptFiles(Handle,true);
 
 end;
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
    BASS_FREE();
 end;
@@ -85,24 +85,24 @@ end;
 
 
 
-procedure TForm1.BitBtn1Click(Sender: TObject);
+procedure TfrmMain.BitBtn1Click(Sender: TObject);
 begin
   Bass_ChannelPause(stream);
 end;
 
-procedure TForm1.BitBtn2Click(Sender: TObject);
+procedure TfrmMain.BitBtn2Click(Sender: TObject);
 begin
  BASS_ChannelStop(stream);
    BASS_CHANNELsetPosition(stream,0,0);
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TfrmMain.Timer1Timer(Sender: TObject);
 begin
 if  track=False then
  ScrollBar1.Position:= BASS_ChannelGetPosition(stream, 0);
 end;
 
-procedure TForm1.ScrollBar1Scroll(Sender: TObject; ScrollCode: TScrollCode;
+procedure TfrmMain.ScrollBar1Scroll(Sender: TObject; ScrollCode: TScrollCode;
   var ScrollPos: Integer);
 begin
 
@@ -115,7 +115,7 @@ begin
    track:=true;
 end;
 
-procedure TForm1.BitBtn3Click(Sender: TObject);
+procedure TfrmMain.BitBtn3Click(Sender: TObject);
 begin
 
 if openDialog1.Execute=False then   exit;
@@ -125,14 +125,14 @@ if openDialog1.Execute=False then   exit;
 
                end;
 
-procedure TForm1.BitBtn4Click(Sender: TObject);
+procedure TfrmMain.BitBtn4Click(Sender: TObject);
 begin
  if BASS_ChannelisActive(stream)=BASS_Active_Paused then
 Bass_channelPlay(stream, false)
 Else
   PlayItem(ListBox1.ItemIndex);
 end;
-Procedure TForm1.AddFiles(filename: string);
+Procedure TfrmMain.AddFiles(filename: string);
 begin
   listBox2.items.add(FileName);
   listBox1.items.Add(ExtractFilename(filename));
@@ -140,13 +140,13 @@ begin
     ListBox1.ItemIndex:=ListBox1.Items.count-1;
 end;
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
+procedure TfrmMain.SpeedButton1Click(Sender: TObject);
 begin
  if OpenDialog1.Execute=false then  exit;
    AddFiles(OpenDialog1.FileName);
 
 end;
-   procedure TForm1.PlayItem(item: integer);
+   procedure TfrmMain.PlayItem(item: integer);
    begin
     if item<0 then exit;
    if stream<>0  then
@@ -166,7 +166,7 @@ panel1.caption:= ExtractFileName(ListBox2.items.strings[item]);
    end;
 
 
-procedure TForm1.SpeedButton2Click(Sender: TObject);
+procedure TfrmMain.SpeedButton2Click(Sender: TObject);
 var
 inindex: integer;
 begin
@@ -179,32 +179,32 @@ LIstBox1.ItemIndex:=inindex;
 
 end;
 
-procedure TForm1.ListBox1KeyDown(Sender: TObject; var Key: Word;
+procedure TfrmMain.ListBox1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
  if key=VK_DElete then
   SpeedButton2.Click;
 end;
 
-procedure TForm1.ListBox1DblClick(Sender: TObject);
+procedure TfrmMain.ListBox1DblClick(Sender: TObject);
 begin
  PlayItem(ListBox1.ItemIndex);
 end;
 
-procedure TForm1.ScrollBar2Scroll(Sender: TObject; ScrollCode: TScrollCode;
+procedure TfrmMain.ScrollBar2Scroll(Sender: TObject; ScrollCode: TScrollCode;
   var ScrollPos: Integer);
 begin
  BASS_SetVolume(ScrollBar2.Position/100);
 end;
 
-procedure TForm1.SpeedButton4Click(Sender: TObject);
+procedure TfrmMain.SpeedButton4Click(Sender: TObject);
 begin
 if SaveDialog1.Execute then
  ListBox2.Items.SaveToFile(SaveDialog1.FileName);
 
 end;
 
-procedure TForm1.SpeedButton3Click(Sender: TObject);
+procedure TfrmMain.SpeedButton3Click(Sender: TObject);
 var i: integer;
 begin
 if OpenDialog2.Execute=false then exit;
@@ -216,7 +216,7 @@ if OpenDialog2.Execute=false then exit;
 
 end;
 
-Procedure TForm1.DropFile(var MSG: TWMDropFiles);
+Procedure TfrmMain.DropFile(var MSG: TWMDropFiles);
 var
 CFileName: array[0..MAX_Path] of Char;
 begin
@@ -232,7 +232,7 @@ begin
   end;
 
 
-   procedure TForm1.Timer2Timer(Sender: TObject);
+   procedure TfrmMain.Timer2Timer(Sender: TObject);
    var
    L,R,L1,R1: integer;
    Level: DWORD;

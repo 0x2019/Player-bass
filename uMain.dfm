@@ -1,4 +1,4 @@
-object Form1: TForm1
+object frmMain: TfrmMain
   Left = 304
   Top = 354
   Caption = 'frmMain'
