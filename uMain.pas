@@ -8,254 +8,236 @@ uses
 
 type
   TfrmMain = class(TForm)
-    OpenDialog1: TOpenDialog;
-    Timer1: TTimer;
+    sOpenTrackFile: TOpenDialog;
+    tmrPlayBack: TTimer;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    BitBtn3: TBitBtn;
-    BitBtn4: TBitBtn;
+    btnPause: TBitBtn;
+    btnStop: TBitBtn;
+    btnOpenTrackFile: TBitBtn;
+    btnPlay: TBitBtn;
     Panel1: TPanel;
-    ScrollBar1: TScrollBar;
-    ScrollBar2: TScrollBar;
-    ListBox1: TListBox;
-    ListBox2: TListBox;
-    SpeedButton1: TSpeedButton;
-    SpeedButton2: TSpeedButton;
-    SpeedButton3: TSpeedButton;
-    SpeedButton4: TSpeedButton;
-    OpenDialog2: TOpenDialog;
-    SaveDialog1: TSaveDialog;
+    sPlayBack: TScrollBar;
+    sVolumeBar: TScrollBar;
+    sPlayList1: TListBox;
+    sPlayList2: TListBox;
+    btnAddPlayList: TSpeedButton;
+    btnDeletePlayList: TSpeedButton;
+    btnOpenPlayList: TSpeedButton;
+    btnSavePlayList: TSpeedButton;
+    sOpenPlayList: TOpenDialog;
+    sSavePlayList: TSaveDialog;
     PaintBox1: TPaintBox;
     PaintBox2: TPaintBox;
-    Timer2: TTimer;
+    tmrPlay: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure ScrollBar1Scroll(Sender: TObject; ScrollCode: TScrollCode;
+    procedure btnPauseClick(Sender: TObject);
+    procedure btnStopClick(Sender: TObject);
+    procedure tmrPlayBackTimer(Sender: TObject);
+    procedure sPlayBackScroll(Sender: TObject; ScrollCode: TScrollCode;
       var ScrollPos: Integer);
-    procedure BitBtn3Click(Sender: TObject);
-    procedure BitBtn4Click(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure SpeedButton2Click(Sender: TObject);
-    procedure ListBox1KeyDown(Sender: TObject; var Key: Word;
+    procedure btnOpenTrackFileClick(Sender: TObject);
+    procedure btnPlayClick(Sender: TObject);
+    procedure btnAddPlayListClick(Sender: TObject);
+    procedure btnDeletePlayListClick(Sender: TObject);
+    procedure sPlayList1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure ListBox1DblClick(Sender: TObject);
-    procedure ScrollBar2Scroll(Sender: TObject; ScrollCode: TScrollCode;
+    procedure sPlayList1DblClick(Sender: TObject);
+    procedure sVolumeBarScroll(Sender: TObject; ScrollCode: TScrollCode;
       var ScrollPos: Integer);
-    procedure SpeedButton4Click(Sender: TObject);
-    procedure SpeedButton3Click(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
+    procedure btnSavePlayListClick(Sender: TObject);
+    procedure btnOpenPlayListClick(Sender: TObject);
+    procedure tmrPlayTimer(Sender: TObject);
 
   private
-    { Private declarations }
-     procedure AddFiles(filename: string);
-     procedure Playitem(item: integer);
-     procedure DropFile(var Msg:TWMDropFiles);  message WM_DropFiles;
+     procedure AddFiles(FileName: string);
+     procedure DropFiles(var Msg: TWMDropFiles);  message WM_DROPFILES;
+     procedure PlayItem(Item: Integer);
   public
     { Public declarations }
   end;
 
 var
   frmMain: TfrmMain;
-  stream: hstream;
-  track: boolean;
+  bChan: DWORD;
+  bFloatable: DWORD;
+  bTrack: boolean;
+
 implementation
 
 {$R *.dfm}
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-DragAcceptFiles(Handle,true);
- if BASS_init(-1,44100,0,handle,nil) then
-   exit;
-
+  DragAcceptFiles(Handle, True);
+  if BASS_Init(-1, 44100, 0, Handle, nil) then
+    Exit;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
-   BASS_FREE();
+  BASS_Free();
 end;
 
-
-
-
-
-procedure TfrmMain.BitBtn1Click(Sender: TObject);
+procedure TfrmMain.btnPauseClick(Sender: TObject);
 begin
-  Bass_ChannelPause(stream);
+  BASS_ChannelPause(bChan);
 end;
 
-procedure TfrmMain.BitBtn2Click(Sender: TObject);
+procedure TfrmMain.btnStopClick(Sender: TObject);
 begin
- BASS_ChannelStop(stream);
-   BASS_CHANNELsetPosition(stream,0,0);
+  BASS_ChannelStop(bChan);
+  BASS_ChannelSetPosition(bChan, 0, 0);
 end;
 
-procedure TfrmMain.Timer1Timer(Sender: TObject);
+procedure TfrmMain.tmrPlayBackTimer(Sender: TObject);
 begin
-if  track=False then
- ScrollBar1.Position:= BASS_ChannelGetPosition(stream, 0);
+  if bTrack = False then
+    sPlayBack.Position:= BASS_ChannelGetPosition(bChan, 0);
 end;
 
-procedure TfrmMain.ScrollBar1Scroll(Sender: TObject; ScrollCode: TScrollCode;
+procedure TfrmMain.sPlayBackScroll(Sender: TObject; ScrollCode: TScrollCode;
   var ScrollPos: Integer);
 begin
-
   if ScrollCode = scEndScroll then
   begin
-  BASS_ChannelSetPosition(stream, Scrollbar1.Position,0);
-  track:=False;
-  end
-  Else
-   track:=true;
+    BASS_ChannelSetPosition(bChan, sPlayBack.Position, 0);
+    bTrack := False;
+  end else
+    bTrack := True;
 end;
 
-procedure TfrmMain.BitBtn3Click(Sender: TObject);
+procedure TfrmMain.btnOpenTrackFileClick(Sender: TObject);
 begin
-
-if openDialog1.Execute=False then   exit;
- AddFiles(OpenDialog1.FileName);
-  LIstBox1.ItemIndex:=LIstBox1.Items.Count-1;
-  PlayItem(ListBox1.ItemIndex);
-
-               end;
-
-procedure TfrmMain.BitBtn4Click(Sender: TObject);
-begin
- if BASS_ChannelisActive(stream)=BASS_Active_Paused then
-Bass_channelPlay(stream, false)
-Else
-  PlayItem(ListBox1.ItemIndex);
-end;
-Procedure TfrmMain.AddFiles(filename: string);
-begin
-  listBox2.items.add(FileName);
-  listBox1.items.Add(ExtractFilename(filename));
-   if ListBox1.ItemIndex=-1 then
-    ListBox1.ItemIndex:=ListBox1.Items.count-1;
+  if sOpenTrackFile.Execute = False then Exit;
+    AddFiles(sOpenTrackFile.FileName);
+    sPlayList1.ItemIndex := sPlayList1.Items.Count -1;
+    PlayItem(sPlayList1.ItemIndex);
 end;
 
-procedure TfrmMain.SpeedButton1Click(Sender: TObject);
+procedure TfrmMain.btnPlayClick(Sender: TObject);
 begin
- if OpenDialog1.Execute=false then  exit;
-   AddFiles(OpenDialog1.FileName);
-
+  if BASS_ChannelisActive(bChan) = BASS_ACTIVE_PAUSED then
+    BASS_ChannelPlay(bChan, False)
+  else
+    PlayItem(sPlayList1.ItemIndex);
 end;
-   procedure TfrmMain.PlayItem(item: integer);
-   begin
-    if item<0 then exit;
-   if stream<>0  then
-BASS_streamFree(stream);
-stream:= Bass_streamCreateFile(false, PChar(ListBox2.items.strings[item]), 0, 0, 0);
-   if stream=0 then
-showmessage('Ошибка файл не загружен!')
-Else
+Procedure TfrmMain.AddFiles(FileName: string);
 begin
-panel1.caption:= ExtractFileName(ListBox2.items.strings[item]);
-    ScrollBar1.Min:=0;
-    ScrollBar1.Max:= BASS_ChannelGetLength(stream, 0)-1;
-    ScrollBar1.Position:=0;
-    BASS_ChannelPlay(stream, false);
+  sPlayList2.Items.Add(FileName);
+  sPlayList1.Items.Add(ExtractFileName(FileName));
 
-               end  ;
-   end;
+  if sPlayList1.ItemIndex = -1 then
+    sPlayList1.ItemIndex := sPlayList1.Items.Count -1;
+end;
 
+procedure TfrmMain.btnAddPlayListClick(Sender: TObject);
+begin
+  if sOpenPlayList.Execute = False then Exit;
+    AddFiles(sOpenPlayList.FileName);
+end;
 
-procedure TfrmMain.SpeedButton2Click(Sender: TObject);
+procedure TfrmMain.PlayItem(Item: Integer);
+begin
+  if Item < 0 then Exit;
+  if bChan <> 0 then
+    BASS_MusicFree(bChan);
+    bChan := BASS_MusicLoad(False, PChar(sPlayList2.Items.Strings[Item]), 0, 0, BASS_MUSIC_PRESCAN or bFloatable {$IFDEF UNICODE} or BASS_UNICODE {$ENDIF}, 1);
+  if bChan = 0 then
+    ShowMessage('Error!')
+  else begin
+    Panel1.Caption := ExtractFileName(sPlayList1.Items.Strings[Item]);
+    sPlayBack.Min := 0;
+    sPlayBack.Max := BASS_ChannelGetLength(bChan, 0) -1;
+    sPlayBack.Position := 0;
+    BASS_ChannelPlay(bChan, False);
+  end;
+end;
+
+procedure TfrmMain.btnDeletePlayListClick(Sender: TObject);
 var
-inindex: integer;
+  Inindex: Integer;
 begin
- inindex:= ListBox1.ItemIndex;
- ListBox1.Items.Delete(Inindex);
- ListBox2.Items.Delete(Inindex);
-if inindex>ListBox1.Items.Count-1 then
-inindex:=LIstBox1.Items.Count-1;
-LIstBox1.ItemIndex:=inindex;
+  Inindex:= sPlayList1.ItemIndex;
+  sPlayList1.Items.Delete(Inindex);
+  sPlayList1.Items.Delete(Inindex);
 
+  if Inindex > sPlayList1.Items.Count -1 then
+    Inindex := sPlayList1.Items.Count -1;
+    sPlayList1.ItemIndex := Inindex;
 end;
 
-procedure TfrmMain.ListBox1KeyDown(Sender: TObject; var Key: Word;
+procedure TfrmMain.sPlayList1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
- if key=VK_DElete then
-  SpeedButton2.Click;
+  if key = VK_DELETE then
+    btnDeletePlayList.Click;
 end;
 
-procedure TfrmMain.ListBox1DblClick(Sender: TObject);
+procedure TfrmMain.sPlayList1DblClick(Sender: TObject);
 begin
- PlayItem(ListBox1.ItemIndex);
+  PlayItem(sPlayList1.ItemIndex);
 end;
 
-procedure TfrmMain.ScrollBar2Scroll(Sender: TObject; ScrollCode: TScrollCode;
+procedure TfrmMain.sVolumeBarScroll(Sender: TObject; ScrollCode: TScrollCode;
   var ScrollPos: Integer);
 begin
- BASS_SetVolume(ScrollBar2.Position/100);
+  BASS_SetVolume(sVolumeBar.Position / 100);
 end;
 
-procedure TfrmMain.SpeedButton4Click(Sender: TObject);
+procedure TfrmMain.btnSavePlayListClick(Sender: TObject);
 begin
-if SaveDialog1.Execute then
- ListBox2.Items.SaveToFile(SaveDialog1.FileName);
-
+  if sSavePlayList.Execute then
+    sPlayList2.Items.SaveToFile(sSavePlayList.FileName);
 end;
 
-procedure TfrmMain.SpeedButton3Click(Sender: TObject);
-var i: integer;
+procedure TfrmMain.btnOpenPlayListClick(Sender: TObject);
+var i: Integer;
 begin
-if OpenDialog2.Execute=false then exit;
-  ListBox2.Items.LoadFromFile(OpenDialog2.FileName);
-  ListBox1.Items.LoadFromFile(OpenDialog2.FileName);
-  for i:=0 to ListBox1.Items.Count-1 do
-  listBox1.Items.strings[i]:=ExtractFileName(listBox1.Items.strings[i]);
-
-
+  if sOpenPlayList.Execute = False then Exit;
+    sPlayList2.Items.LoadFromFile(sOpenPlayList.FileName);
+    sPlayList1.Items.LoadFromFile(sOpenPlayList.FileName);
+  for i := 0 to sPlayList1.Items.Count -1 do
+    sPlayList1.Items.Strings[i] := ExtractFileName(sPlayList1.Items.Strings[i]);
 end;
 
-Procedure TfrmMain.DropFile(var MSG: TWMDropFiles);
+Procedure TfrmMain.DropFiles(var Msg: TWMDropFiles);
 var
-CFileName: array[0..MAX_Path] of Char;
+  CFileName: array[0.. MAX_PATH] of Char;
 begin
- try
- if DragQueryFile(MSG.Drop, 0, CfileName, MaX_Path)>0 then
- begin
- AddFiles(CFileName);
-  Msg.Result:=0;
-   end;
-   finally
-  DragFinish(MSG.Drop);
+try
+  if DragQueryFile(Msg.Drop, 0, CFileName, MAX_PATH) > 0 then
+  begin
+    AddFiles(CFileName);
+    Msg.Result := 0;
+    end;
+  finally
+    DragFinish(Msg.Drop);
   end;
-  end;
+end;
 
-
-   procedure TfrmMain.Timer2Timer(Sender: TObject);
-   var
-   L,R,L1,R1: integer;
-   Level: DWORD;
+procedure TfrmMain.tmrPlayTimer(Sender: TObject);
+var
+  L, R, L1, R1: Integer;
+  Level: DWORD;
 begin
-  if BASS_ChannelIsActive(stream)<>  BASS_Active_Playing then Exit;
-   Level:= BASS_ChannelGetLevel(stream);
-  L:= HiWORD(Level);
-  R:= LOWORD(Level);
-  PaintBox1.Canvas.Brush.Color:= clWhite;
-  PaintBox1.Canvas.FillRect(PaintBox1.Canvas.Cliprect);
+  if BASS_ChannelIsActive(bChan) <> BASS_ACTIVE_PLAYING then Exit;
+    Level:= BASS_ChannelGetLevel(bChan);
+    L:= HiWORD(Level);
+    R:= LOWORD(Level);
+    PaintBox1.Canvas.Brush.Color := clWhite;
+    PaintBox1.Canvas.FillRect(PaintBox1.Canvas.Cliprect);
+    PaintBox2.Canvas.Brush.Color := clWhite;
+    PaintBox2.Canvas.FillRect(PaintBox1.Canvas.Cliprect);
 
- PaintBox2.Canvas.Brush.Color:= clWhite;
- PaintBox2.Canvas.FillRect(PaintBox1.Canvas.Cliprect);
-
-
-  L1:=Round(L / (32768/ PaintBox1.Height));
-  R1:=Round(R / (32768/ PaintBox2.Height));
-  PaintBox1.Canvas.Brush.Color:= clBlue;
-  PaintBox2.Canvas.Brush.Color:= clBlue;
-  PaintBox1.Canvas.Rectangle (0, PaintBox1.Height-L1, PaintBox1.Width, PaintBox1.Height);
-  PaintBox2.Canvas.Rectangle (0, PaintBox2.Height-R1, PaintBox2.Width, PaintBox2.Height);
-
-
+    L1:=Round(L / (32768 / PaintBox1.Height));
+    R1:=Round(R / (32768 / PaintBox2.Height));
+    PaintBox1.Canvas.Brush.Color := clBlue;
+    PaintBox2.Canvas.Brush.Color := clBlue;
+    PaintBox1.Canvas.Rectangle (0, PaintBox1.Height-L1, PaintBox1.Width, PaintBox1.Height);
+    PaintBox2.Canvas.Rectangle (0, PaintBox2.Height-R1, PaintBox2.Width, PaintBox2.Height);
 end;
 
 end.

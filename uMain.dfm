@@ -2,7 +2,7 @@ object frmMain: TfrmMain
   Left = 304
   Top = 354
   Caption = 'frmMain'
-  ClientHeight = 541
+  ClientHeight = 606
   ClientWidth = 579
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -25,7 +25,7 @@ object frmMain: TfrmMain
     DesignSize = (
       579
       33)
-    object BitBtn1: TBitBtn
+    object btnPause: TBitBtn
       Left = 480
       Top = 8
       Width = 25
@@ -46,9 +46,9 @@ object frmMain: TfrmMain
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
       TabOrder = 0
-      OnClick = BitBtn1Click
+      OnClick = btnPauseClick
     end
-    object BitBtn2: TBitBtn
+    object btnStop: TBitBtn
       Left = 504
       Top = 8
       Width = 25
@@ -69,9 +69,9 @@ object frmMain: TfrmMain
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
       TabOrder = 1
-      OnClick = BitBtn2Click
+      OnClick = btnStopClick
     end
-    object BitBtn3: TBitBtn
+    object btnOpenTrackFile: TBitBtn
       Left = 544
       Top = 8
       Width = 25
@@ -92,9 +92,9 @@ object frmMain: TfrmMain
         5555575FFF755555555557000075555555555577775555555555}
       NumGlyphs = 2
       TabOrder = 2
-      OnClick = BitBtn3Click
+      OnClick = btnOpenTrackFileClick
     end
-    object BitBtn4: TBitBtn
+    object btnPlay: TBitBtn
       Left = 456
       Top = 8
       Width = 25
@@ -115,7 +115,7 @@ object frmMain: TfrmMain
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
       TabOrder = 3
-      OnClick = BitBtn4Click
+      OnClick = btnPlayClick
     end
     object Panel1: TPanel
       Left = 0
@@ -132,58 +132,58 @@ object frmMain: TfrmMain
     Height = 41
     Align = alTop
     TabOrder = 1
-    object ScrollBar1: TScrollBar
+    object sPlayBack: TScrollBar
       Left = -16
       Top = 16
       Width = 369
       Height = 9
       PageSize = 0
       TabOrder = 0
-      OnScroll = ScrollBar1Scroll
+      OnScroll = sPlayBackScroll
     end
-    object ScrollBar2: TScrollBar
+    object sVolumeBar: TScrollBar
       Left = 392
       Top = 16
       Width = 177
       Height = 9
       PageSize = 0
       TabOrder = 1
-      OnScroll = ScrollBar2Scroll
+      OnScroll = sVolumeBarScroll
     end
   end
   object Panel4: TPanel
     Left = 0
     Top = 74
     Width = 579
-    Height = 467
+    Height = 532
     Align = alClient
     TabOrder = 2
     DesignSize = (
       579
-      467)
-    object SpeedButton1: TSpeedButton
+      532)
+    object btnAddPlayList: TSpeedButton
       Left = 16
-      Top = 431
+      Top = 496
       Width = 33
       Height = 25
       Anchors = [akLeft, akBottom]
       Caption = '+'
-      OnClick = SpeedButton1Click
+      OnClick = btnAddPlayListClick
       ExplicitTop = 432
     end
-    object SpeedButton2: TSpeedButton
+    object btnDeletePlayList: TSpeedButton
       Left = 56
-      Top = 431
+      Top = 496
       Width = 33
       Height = 25
       Anchors = [akLeft, akBottom]
       Caption = '---'
-      OnClick = SpeedButton2Click
+      OnClick = btnDeletePlayListClick
       ExplicitTop = 432
     end
-    object SpeedButton3: TSpeedButton
+    object btnOpenPlayList: TSpeedButton
       Left = 248
-      Top = 431
+      Top = 496
       Width = 33
       Height = 25
       Anchors = [akRight, akBottom]
@@ -201,12 +201,12 @@ object frmMain: TfrmMain
         55555575FFF75555555555700007555555555557777555555555555555555555
         5555555555555555555555555555555555555555555555555555}
       NumGlyphs = 2
-      OnClick = SpeedButton3Click
+      OnClick = btnOpenPlayListClick
       ExplicitTop = 432
     end
-    object SpeedButton4: TSpeedButton
+    object btnSavePlayList: TSpeedButton
       Left = 280
-      Top = 431
+      Top = 496
       Width = 33
       Height = 25
       Anchors = [akRight, akBottom]
@@ -224,7 +224,7 @@ object frmMain: TfrmMain
         99337F3FF7F3733777F30F08F0F0337999337F7737F73F7777330FFFF0039999
         93337FFFF7737777733300000033333333337777773333333333}
       NumGlyphs = 2
-      OnClick = SpeedButton4Click
+      OnClick = btnSavePlayListClick
       ExplicitTop = 432
     end
     object PaintBox1: TPaintBox
@@ -239,18 +239,18 @@ object frmMain: TfrmMain
       Width = 25
       Height = 97
     end
-    object ListBox1: TListBox
+    object sPlayList1: TListBox
       Left = 8
-      Top = 119
+      Top = 184
       Width = 561
       Height = 305
       Anchors = [akLeft, akRight, akBottom]
       ItemHeight = 13
       TabOrder = 0
-      OnDblClick = ListBox1DblClick
-      OnKeyDown = ListBox1KeyDown
+      OnDblClick = sPlayList1DblClick
+      OnKeyDown = sPlayList1KeyDown
     end
-    object ListBox2: TListBox
+    object sPlayList2: TListBox
       Left = 16
       Top = 280
       Width = 545
@@ -260,27 +260,28 @@ object frmMain: TfrmMain
       Visible = False
     end
   end
-  object OpenDialog1: TOpenDialog
-    Left = 416
-    Top = 360
+  object sOpenTrackFile: TOpenDialog
+    Left = 544
+    Top = 32
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 448
-    Top = 360
+  object tmrPlayBack: TTimer
+    Interval = 10
+    OnTimer = tmrPlayBackTimer
+    Left = 280
+    Top = 80
   end
-  object OpenDialog2: TOpenDialog
-    Left = 392
-    Top = 362
+  object sOpenPlayList: TOpenDialog
+    Left = 192
+    Top = 570
   end
-  object SaveDialog1: TSaveDialog
-    Left = 360
-    Top = 362
+  object sSavePlayList: TSaveDialog
+    Left = 216
+    Top = 570
   end
-  object Timer2: TTimer
+  object tmrPlay: TTimer
     Interval = 33
-    OnTimer = Timer2Timer
-    Left = 376
-    Top = 98
+    OnTimer = tmrPlayTimer
+    Left = 248
+    Top = 82
   end
 end
