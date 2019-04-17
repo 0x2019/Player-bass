@@ -184,7 +184,7 @@ end;
 procedure TfrmMain.sVolumeBarScroll(Sender: TObject; ScrollCode: TScrollCode;
   var ScrollPos: Integer);
 begin
-  BASS_SetVolume(sVolumeBar.Position / 100);
+  BASS_ChannelSetAttribute(bchan, BASS_ATTRIB_VOL, sVolumeBar.Position / 100);
 end;
 
 procedure TfrmMain.btnSavePlayListClick(Sender: TObject);

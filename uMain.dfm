@@ -147,6 +147,7 @@ object frmMain: TfrmMain
       Width = 177
       Height = 9
       PageSize = 0
+      Position = 100
       TabOrder = 1
       OnScroll = sVolumeBarScroll
     end
