@@ -1,16 +1,19 @@
 object frmMain: TfrmMain
   Left = 304
   Top = 354
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
   Caption = 'frmMain'
-  ClientHeight = 606
-  ClientWidth = 579
+  ClientHeight = 259
+  ClientWidth = 581
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
+  Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -20,7 +23,6 @@ object frmMain: TfrmMain
     Top = 0
     Width = 579
     Height = 33
-    Align = alTop
     TabOrder = 0
     DesignSize = (
       579
@@ -45,7 +47,7 @@ object frmMain: TfrmMain
         70E337F33333333337F3E0FFFFFFFFFFF0E337FFFFFFFFFFF7F3E00000000000
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
-      TabOrder = 0
+      TabOrder = 2
       OnClick = btnPauseClick
     end
     object btnStop: TBitBtn
@@ -68,7 +70,7 @@ object frmMain: TfrmMain
         70E337F33333333337F3E0FFFFFFFFFFF0E337FFFFFFFFFFF7F3E00000000000
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
-      TabOrder = 1
+      TabOrder = 4
       OnClick = btnStopClick
     end
     object btnOpenTrackFile: TBitBtn
@@ -91,7 +93,7 @@ object frmMain: TfrmMain
         55557FFFFFFFFF7555550000000000555555777777777755555550FBFB055555
         5555575FFF755555555557000075555555555577775555555555}
       NumGlyphs = 2
-      TabOrder = 2
+      TabOrder = 0
       OnClick = btnOpenTrackFileClick
     end
     object btnPlay: TBitBtn
@@ -114,7 +116,7 @@ object frmMain: TfrmMain
         70E337F33333333337F3E0FFFFFFFFFFF0E337FFFFFFFFFFF7F3E00000000000
         00E33777777777777733EEEEEEEEEEEEEEE33333333333333333}
       NumGlyphs = 2
-      TabOrder = 3
+      TabOrder = 1
       OnClick = btnPlayClick
     end
     object Panel1: TPanel
@@ -122,30 +124,43 @@ object frmMain: TfrmMain
       Top = 8
       Width = 297
       Height = 25
-      TabOrder = 4
+      TabOrder = 3
     end
   end
   object Panel3: TPanel
     Left = 0
     Top = 33
     Width = 579
-    Height = 41
-    Align = alTop
+    Height = 48
     TabOrder = 1
+    object lblTrackPos: TLabel
+      Left = 8
+      Top = 27
+      Width = 28
+      Height = 13
+      Caption = '00:00'
+    end
+    object lblTrackLen: TLabel
+      Left = 349
+      Top = 27
+      Width = 28
+      Height = 13
+      Caption = '00:00'
+    end
     object sPlayBack: TScrollBar
-      Left = -16
-      Top = 16
+      Left = 8
+      Top = 6
       Width = 369
-      Height = 9
+      Height = 15
       PageSize = 0
       TabOrder = 0
       OnScroll = sPlayBackScroll
     end
     object sVolumeBar: TScrollBar
-      Left = 392
-      Top = 16
-      Width = 177
-      Height = 9
+      Left = 408
+      Top = 6
+      Width = 161
+      Height = 15
       PageSize = 0
       Position = 100
       TabOrder = 1
@@ -154,40 +169,31 @@ object frmMain: TfrmMain
   end
   object Panel4: TPanel
     Left = 0
-    Top = 74
+    Top = 87
     Width = 579
-    Height = 532
-    Align = alClient
+    Height = 170
     TabOrder = 2
-    DesignSize = (
-      579
-      532)
     object btnAddPlayList: TSpeedButton
-      Left = 16
-      Top = 496
+      Left = 8
+      Top = 135
       Width = 33
       Height = 25
-      Anchors = [akLeft, akBottom]
       Caption = '+'
       OnClick = btnAddPlayListClick
-      ExplicitTop = 432
     end
     object btnDeletePlayList: TSpeedButton
-      Left = 56
-      Top = 496
+      Left = 39
+      Top = 135
       Width = 33
       Height = 25
-      Anchors = [akLeft, akBottom]
       Caption = '---'
       OnClick = btnDeletePlayListClick
-      ExplicitTop = 432
     end
     object btnOpenPlayList: TSpeedButton
-      Left = 248
-      Top = 496
+      Left = 86
+      Top = 135
       Width = 33
       Height = 25
-      Anchors = [akRight, akBottom]
       Glyph.Data = {
         76010000424D7601000000000000760000002800000020000000100000000100
         04000000000000010000120B0000120B00001000000000000000000000000000
@@ -203,14 +209,12 @@ object frmMain: TfrmMain
         5555555555555555555555555555555555555555555555555555}
       NumGlyphs = 2
       OnClick = btnOpenPlayListClick
-      ExplicitTop = 432
     end
     object btnSavePlayList: TSpeedButton
-      Left = 280
-      Top = 496
+      Left = 117
+      Top = 135
       Width = 33
       Height = 25
-      Anchors = [akRight, akBottom]
       Glyph.Data = {
         76010000424D7601000000000000760000002800000020000000100000000100
         04000000000000010000130B0000130B00001000000000000000000000000000
@@ -226,63 +230,63 @@ object frmMain: TfrmMain
         93337FFFF7737777733300000033333333337777773333333333}
       NumGlyphs = 2
       OnClick = btnSavePlayListClick
-      ExplicitTop = 432
     end
     object PaintBox1: TPaintBox
-      Left = 8
-      Top = 16
+      Left = 519
+      Top = 4
       Width = 25
-      Height = 97
+      Height = 125
     end
     object PaintBox2: TPaintBox
-      Left = 536
-      Top = 8
+      Left = 545
+      Top = 4
       Width = 25
-      Height = 97
+      Height = 125
     end
     object sPlayList1: TListBox
       Left = 8
-      Top = 184
-      Width = 561
-      Height = 305
-      Anchors = [akLeft, akRight, akBottom]
+      Top = 4
+      Width = 505
+      Height = 125
       ItemHeight = 13
+      MultiSelect = True
       TabOrder = 0
       OnDblClick = sPlayList1DblClick
       OnKeyDown = sPlayList1KeyDown
     end
     object sPlayList2: TListBox
       Left = 16
-      Top = 280
-      Width = 545
-      Height = 137
+      Top = 14
+      Width = 489
+      Height = 107
       ItemHeight = 13
+      MultiSelect = True
       TabOrder = 1
       Visible = False
     end
   end
   object sOpenTrackFile: TOpenDialog
-    Left = 544
-    Top = 32
+    Left = 152
+    Top = 280
   end
   object tmrPlayBack: TTimer
     Interval = 10
     OnTimer = tmrPlayBackTimer
-    Left = 280
-    Top = 80
+    Left = 120
+    Top = 280
   end
   object sOpenPlayList: TOpenDialog
-    Left = 192
-    Top = 570
+    Left = 32
+    Top = 282
   end
   object sSavePlayList: TSaveDialog
-    Left = 216
-    Top = 570
+    Left = 64
+    Top = 282
   end
   object tmrPlay: TTimer
     Interval = 33
     OnTimer = tmrPlayTimer
-    Left = 248
-    Top = 82
+    Left = 184
+    Top = 282
   end
 end

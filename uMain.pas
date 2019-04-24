@@ -31,6 +31,8 @@ type
     PaintBox1: TPaintBox;
     PaintBox2: TPaintBox;
     tmrPlay: TTimer;
+    lblTrackPos: TLabel;
+    lblTrackLen: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnPauseClick(Sender: TObject);
@@ -222,6 +224,8 @@ procedure TfrmMain.tmrPlayTimer(Sender: TObject);
 var
   L, R, L1, R1: Integer;
   Level: DWORD;
+  TrackLen: Double;
+  TrackPos: Double;
 begin
   if BASS_ChannelIsActive(bChan) <> BASS_ACTIVE_PLAYING then Exit;
     Level:= BASS_ChannelGetLevel(bChan);
@@ -238,6 +242,12 @@ begin
     PaintBox2.Canvas.Brush.Color := clBlue;
     PaintBox1.Canvas.Rectangle (0, PaintBox1.Height-L1, PaintBox1.Width, PaintBox1.Height);
     PaintBox2.Canvas.Rectangle (0, PaintBox2.Height-R1, PaintBox2.Width, PaintBox2.Height);
+
+    TrackLen := BASS_ChannelBytes2Seconds(bChan, BASS_ChannelGetLength(bChan, 0));
+    TrackPos := BASS_ChannelBytes2Seconds(bChan, BASS_ChannelGetPosition(bChan, 0));
+
+    lblTrackPos.Caption := format('%2.2d:%2.2d', [trunc(TrackPos) div 60, trunc(TrackPos) mod 60]);
+    lblTrackLen.Caption := format('%2.2d:%2.2d', [trunc(TrackLen) div 60, trunc(TrackLen) mod 60]);
 end;
 
 end.
